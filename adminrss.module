@@ -1,0 +1,137 @@
+<?php
+// $id$
+
+/**
+ * @file
+ * Author: James Blake <james at webgeer dot com>
+ * Enables one to view unapproved nodes or comments using an RSS reader.
+ *
+ * This module was made a lot easier for me by both adminblock.module and commentrss.module.
+ * Thanks to both Fredrik Jonsson and Gabor Hojtsy.
+ */
+ 
+define('ADMINRSS_KEY', variable_get('adminrss_key',NULL));
+//define('ADMINRSS_KEY', 'test');
+
+/**
+ * Implementation of hook_help().
+ */
+ 
+function adminrss_help($section) {
+  switch ($section) {
+//    case 'admin/help#aggregator':
+//      return t(' ');
+    case 'admin/modules#description':
+    return t('Provide an RSS feed for unapproved nodes and comments');
+  }
+}
+
+/**
+ * Implementation of hook_settings().
+ *
+ */
+
+function adminrss_settings() {
+
+//  $form['Admin RSS']=array('#type' => 'fieldset','#title' => t('AdminRSS'));
+//  $form['Admin RSS']['adminrss_key']=array('#type' => 'textfield', '#title' => t('Admin RSS key'), '#default_value'=>variable_get('adminrss_key', ''), '#size' => 50, '#maxlength' => 255,'#description' => t('This is the key that will be required in order to get a RSS feed for the admin RSS.'));
+
+  $output  = form_group(t('AdminRSS settings'),
+             form_textfield(t('Admin RSS Key'), 'adminrss_key', variable_get('adminrss_key', ''), 50, 255, t('This is the key that will be required in order to get a RSS feed for the admin RSS.')));
+  return $output;
+}
+
+/**
+ * Implementation of hook_menu().
+ *
+ */
+
+function adminrss_menu($may_cache) {
+  $items=array();
+  if ($may_cache) {
+    $items[] = array('path' => 'adminrss',
+                     'title' => 'Admin RSS Feed',
+                     'callback' => 'adminrss_handler',
+                     'access' => TRUE,
+                     'type' => MENU_CALLBACK);
+  }
+
+  return $items;
+}
+
+/**
+ * The handler for admin RSS
+ *
+ * If the $type is not set to either 'node' or 'comment' or the key is not set, the function returns 401
+ *
+ *
+ */
+
+function adminrss_handler($type=NULL,$key=NULL) {
+  if ($type && $key && $key==ADMINRSS_KEY) {
+    if (in_array($type, array('node', 'comment'))) {
+      if (call_user_func('adminrss_feed_' . $type)) {
+        return;
+      }
+    }
+  }
+  else {
+    //error must specify both a type and provide a key
+    drupal_access_denied();
+  }
+}
+
+
+
+function adminrss_feed_node() {
+  $result = db_query_range('SELECT n.nid, n.title, n.changed, u.name, u.uid
+                            FROM {node} n
+                            INNER JOIN {users} u ON n.uid = u.uid
+                            WHERE n.status = 0 AND n.moderate = 1
+                            ORDER BY n.changed DESC', 0, 15);
+  node_feed($result,array('description'=>t('Unapproved Nodes for Administration')));
+}
+
+
+function adminrss_feed_comment() {
+
+  $result = db_query_range('SELECT c.timestamp, c.subject, c.cid, c.nid, n.title
+                            FROM {comments} c
+                            INNER JOIN {node} n ON c.nid = n.nid
+                            WHERE c.status = 1
+                            ORDER BY c.timestamp DESC ', 0, 15);
+  $items = '';
+  while ($comment = db_fetch_object($result)) {
+    $link = url('comment/edit/'. $comment->cid, NULL,NULL,TRUE); // url("node/{$comment->nid}", NULL, "comment-{$comment->cid}", TRUE);
+    $items .= format_rss_item($comment->subject, $link, $comment->comment, array('pubDate' => date('r', $comment->timestamp)));
+//  $comment = db_fetch_object($result)) {
+//  $items[] = $comment->subject .' - '. format_date($comment->timestamp, 'medium') .'<br />['. l(t('node'), 'node/'. $comment->nid, array('title' => $comment->title)) .']|['. l(t('edit'), 'comment/edit/'. $comment->cid) .']|['. l(t('delete'), 'admin/comment/delete/'. $comment->cid) .']';
+  }
+  adminrss_format_feed($items,array('description'=>t('Unapproved Comments for Administration')));
+}
+
+//Note this function is identical to the commentrss.module's function commentrss_format_feed
+
+function adminrss_format_feed($items, $channel = array()) {
+  global $base_url;
+
+  $languages = (function_exists('locale') ? locale_supported_languages() : array('name' => array('en' => 'English')));
+  $channel_defaults = array(
+    'version'     => '0.92',
+    'title'       => variable_get('site_name', 'drupal') . ' - ' . t('Comments'),
+    'link'        => $base_url,
+    'description' => t('Comments'),
+    'language'    => (($key = reset(array_keys($languages['name']))) ? $key : 'en')
+  );
+  $channel = array_merge($channel_defaults, $channel);
+
+  $output = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+  $output .= "<!DOCTYPE rss [<!ENTITY % HTMLlat1 PUBLIC \"-//W3C//ENTITIES Latin 1 for XHTML//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml-lat1.ent\">]>\n";
+  $output .= "<rss version=\"". $channel["version"] . "\" xml:base=\"". $base_url ."\">\n";
+  $output .= format_rss_channel($channel['title'], $channel['link'], $channel['description'], $items, $channel['language']);
+  $output .= "</rss>\n";
+
+  drupal_set_header('Content-Type: text/xml; charset=utf-8');
+  print $output;
+}
+
