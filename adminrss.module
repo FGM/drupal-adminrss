@@ -35,10 +35,14 @@ function adminrss_settings() {
 
 //  $form['Admin RSS']=array('#type' => 'fieldset','#title' => t('AdminRSS'));
 //  $form['Admin RSS']['adminrss_key']=array('#type' => 'textfield', '#title' => t('Admin RSS key'), '#default_value'=>variable_get('adminrss_key', ''), '#size' => 50, '#maxlength' => 255,'#description' => t('This is the key that will be required in order to get a RSS feed for the admin RSS.'));
-
-  $output  = form_group(t('AdminRSS settings'),
-             form_textfield(t('Admin RSS Key'), 'adminrss_key', variable_get('adminrss_key', ''), 50, 255, t('This is the key that will be required in order to get a RSS feed for the admin RSS.')));
-  return $output;
+$form=array();
+$form['adminrss_key'] = array('#type' => 'textfield',
+'#title' => t('Admin RSS Key'),
+'#required' => TRUE,
+'#description' =>t('This is the key that will be required in order to get a RSS feed for the admin RSS.'),
+'#default_value' => variable_get('adminrss_key', ''),
+'#weight' => -5);
+  return $form;
 }
 
 /**
