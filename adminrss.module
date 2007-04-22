@@ -28,9 +28,6 @@ function adminrss_help($section) {
  */
 function adminrss_admin_settings() {
 
-//  $form['Admin RSS']=array('#type' => 'fieldset','#title' => t('AdminRSS'));
-//  $form['Admin RSS']['adminrss_key']=array('#type' => 'textfield', '#title' => t('Admin RSS key'), '#default_value'=>variable_get('adminrss_key', ''), '#size' => 50, '#maxlength' => 255,'#description' => t('This is the key that will be required in order to get a RSS feed for the admin RSS.'));
-
 $key = variable_get('adminrss_key', '');
 if ($key == ''){
   $key = md5(uniqid(rand(), true));
@@ -77,6 +74,20 @@ function adminrss_menu($may_cache) {
       'type'     => MENU_CALLBACK
     );
     $items[] = array(
+      'path'     => 'adminrss/publish',
+      'title'    => 'Publish',
+      'callback' => 'adminrss_publish',
+      'access'   => user_access('administer nodes'),
+      'type'     => MENU_CALLBACK
+    );
+    $items[] = array(
+      'path'     => 'adminrss/publish_promote',
+      'title'    => 'Publish and promote',
+      'callback' => 'adminrss_publish_and_promote',
+      'access'   => user_access('administer nodes'),
+      'type'     => MENU_CALLBACK
+    );
+    $items[] = array(
       'path'        => 'admin/settings/adminrss',
       'title'       => 'Admin RSS Feed',
       'description' => t('Configure access to the Admin RSS feeds.'),
@@ -111,6 +122,37 @@ function adminrss_handler($type = NULL, $key = NULL) {
 }
 
 /**
+  * Publish the comment/node and then redirect to the node. Uses Drupal auth.
+  */
+function adminrss_publish($type, $nid){
+  if (isset($type) && isset($nid) && in_array($type, array('node', 'comment'))){
+    if ($type=='node'){
+      node_operations_publish(array($nid));
+      drupal_goto('node/'.$nid);
+    } else {
+      $comment = _comment_load($nid);
+      db_query('UPDATE {comments} SET status=0 WHERE cid='.$nid);
+      drupal_goto("node/$comment->nid",NULL,"comment-$comment->cid");
+    }
+  } else {
+    drupal_access_denied();
+  }
+}
+
+/**
+  * Publish and promote the node to the front page.
+  */
+function adminrss_publish_and_promote($nid){
+  if (isset($nid)){
+    node_operations_publish(array($nid));
+    node_operations_promote(array($nid));
+    drupal_goto('node/'.$nid);
+  } else {
+    drupal_access_denied();
+  }
+}
+
+/**
  * Output a node feed for nodes under moderation
  */
 function adminrss_feed_node() {
@@ -119,7 +161,19 @@ function adminrss_feed_node() {
                             INNER JOIN {users} u ON n.uid = u.uid
                             WHERE n.status = 0 AND n.moderate = 1
                             ORDER BY n.changed DESC', 0, 15);
-  adminrss_format_feed($results, array(
+  $items = '';
+  while ($results = db_fetch_object($result)) {
+    $node = node_load($results->nid);
+    $link = url('node/edit/'. $node->nid, NULL,NULL,TRUE); 
+    $content = '<p>'.t($node->type.': !node', array('!node' => l($node->title, "node/$node->nid", NULL, NULL, NULL))).'</p>';
+    // Insert actions
+    $content .= '<p>'.l(t('publish'),'adminrss/publish/node/'.$node->nid, NULL, NULL, NULL).'|'.l(t('publish and promote'),'adminrss/publish_promote/'.$node->nid, NULL, NULL, NULL).'</p>';
+    if (!empty($node->body)) {
+      $content .= " : \n" . filter_xss($node->body);
+    }
+    $items .= format_rss_item($comment->subject, $link, $content, array('pubDate' => date('r', $node->timestamp)));
+  }
+  adminrss_format_feed($items, array(
     'description' => t('Unapproved Nodes for Administration'),
     'title'       => variable_get('site_name', 'drupal') . ' - ' . t('Nodes'),
   ));
@@ -140,12 +194,11 @@ function adminrss_feed_comment() {
   while ($comment = db_fetch_object($result)) {
     $link = url('comment/edit/'. $comment->cid, NULL,NULL,TRUE); // url("node/{$comment->nid}", NULL, "comment-{$comment->cid}", TRUE);
     $content = t('Comment on node !node', array('!node' => l($comment->title, "node/$comment->nid", NULL, NULL, "comment-$comment->cid")));
+    $content .= '<p>'.l(t('publish'),'adminrss/publish/comment/'.$comment->cid, NULL, NULL, NULL).'</p>';
     if (!empty($comment->comment)) {
-      $content .= " : \n" . filter_xss($comment->comment);
+      $content .= "\n" . filter_xss($comment->comment);
     }
     $items .= format_rss_item($comment->subject, $link, $content, array('pubDate' => date('r', $comment->timestamp)));
-//  $comment = db_fetch_object($result)) {
-//  $items[] = $comment->subject .' - '. format_date($comment->timestamp, 'medium') .'<br />['. l(t('node'), 'node/'. $comment->nid, array('title' => $comment->title)) .']|['. l(t('edit'), 'comment/edit/'. $comment->cid) .']|['. l(t('delete'), 'admin/comment/delete/'. $comment->cid) .']';
   }
   adminrss_format_feed($items, array(
     'description' => t('Unapproved Comments for Administration'),
