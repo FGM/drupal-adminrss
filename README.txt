@@ -3,33 +3,21 @@ $Id$
 Description
 -----------
 
-The AdminRSS module creates RSS feeds for the administrative information for drupal website.
-These are protected with a key that can be set in admin/settings/adminrss page.
+The AdminRSS module creates RSS feeds for the administrative information
+of a drupal website. These are protected with a key string that can be set at
+the "admin/settings/adminrss" page.
 
-The resulting pages can then be read at:
+The resulting pages can then be fetchrd at:
   adminrss/node/keystring  - RSS feed for unapproved nodes
   adminrss/comment/keystring - RSS feed for unapproved comments
-  
-  
-
 
 Installation
 ------------
 
-1) copy the adminrss directory into the modules directory
-
-2) enable the 'gmap module' in drupal
-
-3) edit admin/settings/adminrss to set a keystring
-
+1) copy the adminrss directory into the sites/all/modules directory
+2) enable the 'adminrss module' in drupal
+3) go to admin/settings/adminrss to set a keystring and the feed links
 4) configure your rss reader to read the appropriate page
-
-
-
-To do
------
-
-- Add a feed for the watchdog notices
 
 Credit
 ------
@@ -39,11 +27,14 @@ James Blake
 http://www.webgeer.com/James
 
 Thanks to Fredrik Jonsson and Gabor Hojtsy for their modules adminblock and
-commentrss which were heavily used to
+commentrss which were heavily used to.
 
 History
 -------
 
-2005-01-30
- - initial development
-
+2007-01-16 Port for Drupal 5 (osinet),
+  New format for the comment feed.
+  Direct links to feeds added in settings.
+  Install/uninstall procedures
+2006-01-30 Port for Drupal 4.7
+2005-01-30 Initial development for Drupal 4.6
