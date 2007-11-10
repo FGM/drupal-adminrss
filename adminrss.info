@@ -1,4 +1,4 @@
 ; $Id$
 name = Admin RSS
 description = Moderation/approval queue feeds.
-
+package = "Administration"
