@@ -1,15 +1,18 @@
 <?php
+// $Id$
 /**
  * @file
- * Author: James Blake <james at webgeer dot com>
+ * Creator: James Blake <james at webgeer dot com>
+ *
+ * Drupal 5 and 6 versions: Frederic G. MARAND <fgm at osinet dot fr>
+ *
  * Enables one to view unapproved nodes or comments using an RSS reader.
  *
- * This module was made a lot easier for me by both adminblock.module and commentrss.module.
- * Thanks to both Fredrik Jonsson and Gabor Hojtsy.
+ * This module was made a lot easier for me (webgeer) by both adminblock.module
+ * and commentrss.module. Thanks to both Fredrik Jonsson and Gabor Hojtsy.
  *
- * @version $Id$
  * @since DRUPAL-4-6
- * @license GPL 2.0
+ * @license General Public License version 2.0 and later
  * @todo watchdog/logging feed
  */
 
@@ -20,17 +23,21 @@ require_once('adminrss_data.inc');
  *
  * @return string
  */
-function adminrss_help($section) {
+function adminrss_help($section, $args) {
   switch ($section) {
     case 'admin/modules#description':
-      return t('Provide an RSS feed for unapproved nodes and comments');
+      $ret = t('Provide an RSS feed for unapproved nodes and comments');
+      break;
+
+    default:
+      $ret = NULL;
   }
+
+  return $ret;
 }
 
 /**
- * 5.0 equivalent of hook_settings().
- *
- * @return array
+ * Implementation of a 6.x equivalent of the 4.x hook_settings().
  */
 function adminrss_admin_settings() {
 
@@ -58,8 +65,8 @@ function adminrss_admin_settings() {
       '#type'        => 'markup',
       '#value'       => t('<ul><li>!nodefeed</li><li>!commentfeed</li></ul>',
         array(
-          '!nodefeed'    => l(t('Nodes feed'),    ADMINRSS_PATH_HOME ."/node/$key"),
-          '!commentfeed' => l(t('Comments feed'), ADMINRSS_PATH_HOME ."/comment/$key")
+          '!nodefeed'    => l(t('Nodes feed'),    ADMINRSS_PATH_HOME .'/node/'. $key),
+          '!commentfeed' => l(t('Comments feed'), ADMINRSS_PATH_HOME .'/comment/'. $key)
         )
       ),
     );
@@ -80,37 +87,29 @@ function adminrss_admin_settings() {
 
 /**
  * Implementation of hook_menu().
- *
- * @param boolean $may_cache
- * @return array
  */
-function adminrss_menu($may_cache) {
+function adminrss_menu() {
   $items = array();
 
-  if ($may_cache) {
-    $items[] = array(
-      'path'        => ADMINRSS_PATH_HOME,
-      'title'       => t('Admin RSS Feed'),
-      'callback'    => 'adminrss_handler',
-      'access'      => TRUE,
-      'type'        => MENU_CALLBACK
-    );
-    $items[] = array(
-      'path'        => ADMINRSS_PATH_SETTINGS,
-      'title'       => t('Admin RSS Feed'),
-      'description' => t('Configure access to the Admin RSS feeds.'),
-      'callback'    => 'drupal_get_form',
-      'callback arguments' => array('adminrss_admin_settings'),
-      'access'      => user_access('administer site configuration'),
-      'type'        => MENU_NORMAL_ITEM,
-    );
-  }
+  $items[ADMINRSS_PATH_HOME] = array(
+    'title'           => 'Admin RSS Feed',
+    'page callback'   => 'adminrss_handler',
+    'access callback' => TRUE,
+    'type'            => MENU_CALLBACK
+  );
+  $items[ADMINRSS_PATH_SETTINGS] = array(
+    'title'            => 'Admin RSS Feed',
+    'description'      => 'Configure access to the Admin RSS feeds.',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('adminrss_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+  );
 
   return $items;
 }
 
 /**
- * The handler for admin RSS
+ * Page handler for admin RSS.
  *
  * If the $type is not set to either 'node' or 'comment' or the key is not set,
  * the function returns 401.
@@ -135,17 +134,26 @@ function adminrss_handler($type = NULL, $key = NULL) {
 }
 
 /**
- * Output a node feed for nodes under moderation
+ * Output a node feed for nodes under moderation.
  *
  * @return string
  */
 function adminrss_feed_node() {
-  $result = db_query_range('SELECT n.nid, n.title, n.changed, u.name, u.uid
-                            FROM {node} n
-                            INNER JOIN {users} u ON n.uid = u.uid
-                            WHERE n.status = 0 AND n.moderate = 1
-                            ORDER BY n.changed DESC', 0, 15);
-  node_feed($result, array('description' => t('Unapproved Nodes for Administration')));
+  $sq = <<<EOT
+  SELECT n.nid
+  FROM {node} n
+  INNER JOIN {users} u ON n.uid = u.uid
+  WHERE n.status = 0 OR n.moderate = 1
+  ORDER BY n.changed DESC
+EOT;
+
+  // No db_rewrite_sql: this feed is for admins only
+  $q = db_query_range($sq, 0, 15);
+  $nids = array();
+  while ($o = db_fetch_object($q)) {
+    $nids[] = $o->nid;
+  }
+  node_feed($nids, array('description' => t('Unapproved Nodes for Administration')));
 }
 
 /**
@@ -157,31 +165,42 @@ function adminrss_feed_node() {
  * @return string
  */
 function adminrss_feed_comment() {
-  $result = db_query_range('SELECT c.timestamp, c.subject, c.cid, c.nid, n.title, c.comment
-                            FROM {comments} c
-                            INNER JOIN {node} n ON c.nid = n.nid
-                            WHERE c.status = 1
-                            ORDER BY c.timestamp DESC ', 0, 15);
+  $sq = <<<EOT
+    SELECT c.timestamp, c.subject, c.cid, c.nid, n.title, c.comment
+    FROM {comments} c
+      INNER JOIN {node} n ON c.nid = n.nid
+    WHERE c.status = 1
+    ORDER BY c.timestamp DESC
+EOT;
+  // No db_rewrite_sql: this feed is for admins only
+  $result = db_query_range($sq, 0, 15);
   $items = '';
-  $link_type = variable_get(ADMINRSS_LINK_TYPE, 0);
+  $link_type = variable_get(ADMINRSS_VAR_LINK_TYPE, 0);
   while ($comment = db_fetch_object($result)) {
     switch ($link_type) {
       case 0: // approval queue
-        $link = url('admin/content/comment/list/approval', NULL, NULL, TRUE);
+        $link = url('admin/content/comment/list/approval', array('absolute' => TRUE));
         break;
+
       case 1: // individual edit link
-        $link = url("comment/edit/$comment->cid", NULL, NULL, TRUE);
+        $link = url('comment/edit/'. $comment->cid, array('absolute' => TRUE));
         // Old-style links below:
         // url("node/{$comment->nid}", NULL, "comment-{$comment->cid}", TRUE);
         break;
+
       default: // site home
         $link = base_path();
     }
-    $content = t('Comment on node !node', array('!node' => l($comment->title, "node/$comment->nid", NULL, NULL, "comment-$comment->cid")));
+    $content = t('Comment on node !node', array(
+      '!node' => l($comment->title, 'node/'. $comment->nid, array(
+        'fragment' => 'comment-'. $comment->cid,
+    ))));
     if (!empty($comment->comment)) {
       $content .= " : \n" . filter_xss($comment->comment);
     }
-    $items .= format_rss_item($comment->subject, $link, $content, array('pubDate' => date('r', $comment->timestamp)));
+    $items .= format_rss_item($comment->subject, $link, $content, array(
+      'pubDate' => date('r', $comment->timestamp),
+    ));
 //  $comment = db_fetch_object($result)) {
 //  $items[] = $comment->subject .' - '. format_date($comment->timestamp, 'medium') .'<br />['. l(t('node'), 'node/'. $comment->nid, array('title' => $comment->title)) .']|['. l(t('edit'), 'comment/edit/'. $comment->cid) .']|['. l(t('delete'), 'admin/comment/delete/'. $comment->cid) .']';
   }
@@ -211,12 +230,12 @@ function adminrss_format_feed($items, $channel = array()) {
   );
   $channel = array_merge($channel_defaults, $channel);
 
-  $output = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+  $ret = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
     ."<!DOCTYPE rss [<!ENTITY % HTMLlat1 PUBLIC \"-//W3C//ENTITIES Latin 1 for XHTML//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml-lat1.ent\">]>\n"
     ."<rss version=\"". $channel["version"] ."\" xml:base=\"". $base_url ."\">\n"
     . format_rss_channel($channel['title'], $channel['link'], $channel['description'], $items, $channel['language'])
     ."</rss>\n";
 
   drupal_set_header('Content-Type: text/xml; charset=utf-8');
-  print $output;
+  print $ret;
 }

@@ -7,9 +7,12 @@ The AdminRSS module creates RSS feeds for the administrative information
 of a drupal website. These are protected with a key string that can be set at
 the "admin/settings/adminrss" page.
 
-The resulting pages can then be fetchrd at:
+The resulting pages can then be fetched at:
   adminrss/node/keystring  - RSS feed for unapproved nodes
   adminrss/comment/keystring - RSS feed for unapproved comments
+
+Since the key is transmitted often and in clear text, it should be complex and 
+changed often.
 
 Installation
 ------------
@@ -22,16 +25,22 @@ Installation
 Credit
 ------
 
-Written by:
-James Blake
+Originally created by:
+James Blake (webgeer)
 http://www.webgeer.com/James
 
+Drupal 5 and 6 versions by:
+Frederic G. Marand (fgm / osinet)
+http://blog.riff.org/
+
 Thanks to Fredrik Jonsson and Gabor Hojtsy for their modules adminblock and
-commentrss which were heavily used to.
+commentrss which were heavily used to create the original version of adminrss.
 
 History
 -------
 
+2010-09-11 Port for Drupal 6 (osinet)
+  New format for node feed: list nodes either unpublished OR under moderation
 2007-01-16 Port for Drupal 5 (osinet),
   New format for the comment feed.
   Direct links to feeds added in settings.

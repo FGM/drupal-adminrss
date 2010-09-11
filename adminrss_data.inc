@@ -1,10 +1,11 @@
 <?php
+// $Id$
 /**
+ * @file
  * Constant definitions for AdminRSS
  *
- * @version $Id$
  * @since DRUPAL-5
- * @license GPL 2.0
+ * @license General Public License version 2.0 and later
  */
 
 /**
