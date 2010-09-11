@@ -1,0 +1,115 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: adminrss DRUPAL-5\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2007-11-10 23:01+0100\n"
+"Last-Translator: Marand <fgm@osinet.fr>\n"
+"Language-Team: OSInet <support@osinet.fr>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-Country: FRANCE\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: adminrss.module:26
+msgid "Provide an RSS feed for unapproved nodes and comments"
+msgstr "Fournit un flux RSS des n&oelig;uds et commentaires en attente d'approbation"
+
+#: adminrss.module:42
+msgid "Admin RSS Key"
+msgstr "Clef d'accès à AdminRSS"
+
+#: adminrss.module:44
+msgid "This is the key that will be required in order to get access to the admin RSS feeds."
+msgstr "Ceci est la clef qui sera nécessaire pour accéder aux flux d'AdminRSS."
+
+#: adminrss.module:54
+msgid "Admin RSS Feeds locations"
+msgstr "Emplacements des flux AdminRSS"
+
+#: adminrss.module:55
+msgid "Copy and paste these links to your RSS aggregator."
+msgstr "Copier et coller ces liens dans votre agrégateur RSS."
+
+#: adminrss.module:59
+msgid "<ul><li>!nodefeed</li><li>!commentfeed</li></ul>"
+msgstr ""
+"<ul>Emplacement des flux AdminRSS:\n"
+"  <li>!nodefeed</li>\n"
+"  <li>!commentfeed</li>\n"
+"  </ul>"
+
+# entities are stripped by the format used, hence no &oelig;
+#: adminrss.module:61
+msgid "Nodes feed"
+msgstr "Flux des noeuds"
+
+#: adminrss.module:62
+msgid "Comments feed"
+msgstr "Flux des commentaires"
+
+#: adminrss.module:70
+msgid "Comment feed links back to"
+msgstr "Le flux des commentaires pointe vers"
+
+#: adminrss.module:72
+msgid "Comment approval queue"
+msgstr "File d'attente d'approbation des commentaires"
+
+#: adminrss.module:73
+msgid "Individual comment edit"
+msgstr "L'édition individuelle des commentaires"
+
+#: adminrss.module:93
+#: ;100
+msgid "Admin RSS Feed"
+msgstr "Flux AdminRSS"
+
+#: adminrss.module:101
+msgid "Configure access to the Admin RSS feeds."
+msgstr "Configure l'accès aux flux AdminRSS"
+
+#: adminrss.module:132
+msgid "You must specify valid type and key information to access an AdminRSS feed."
+msgstr "Vous devez spécifier un type de contenu et une clef valide pour accéder à un flux AdminRSS."
+
+# entities are stripped by the format used, hence no &oelig;
+#: adminrss.module:148
+msgid "Unapproved Nodes for Administration"
+msgstr "Noeuds en attente d'approbation"
+
+# entities are stripped by the format used, hence no &oelig;
+#: adminrss.module:180
+msgid "Comment on node !node"
+msgstr "Commentaires sur le noeud !node"
+
+#: adminrss.module:188
+msgid "Unapproved Comments for Administration"
+msgstr "Commentaires en attente d'approbation"
+
+#: adminrss.module:207
+#: ;209
+msgid "Comments"
+msgstr "Commentaires"
+
+#: adminrss.install:15
+msgid "Configuration variables for AdminRSS were removed."
+msgstr "Les variables de configuration d'AdminRSS ont été supprimées."
+
+#: adminrss.install:19
+msgid "AdminRSS has been installed and now needs to be <a href=\"!link\" title=\"AdminRSS Configuration\">configured</a>."
+msgstr "AdminRSS est maintenant installé et vous devez le <a href=\"!link\" title=\"Configuration d'AdminRSS\">configurer</a>."
+
+#: adminrss.info:0
+msgid "Admin RSS"
+msgstr "AdminRSS"
+
+#: adminrss.info:0
+msgid "Moderation/approval queue feeds."
+msgstr "Flux des files d'attente de modération/approbation"
+
+#: adminrss.info:0
+msgid "Administration"
+msgstr "Administration"
+
