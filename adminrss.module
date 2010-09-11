@@ -165,6 +165,8 @@ EOT;
  * @return string
  */
 function adminrss_feed_comment() {
+  global $base_url;
+
   $sq = <<<EOT
     SELECT c.timestamp, c.subject, c.cid, c.nid, n.title, c.comment
     FROM {comments} c
@@ -200,6 +202,14 @@ EOT;
     }
     $items .= format_rss_item($comment->subject, $link, $content, array(
       'pubDate' => date('r', $comment->timestamp),
+      array(
+        'key'        => 'guid',
+        'value'      => t('Comment @cid for node @nid at !site', array(
+          '@cid'  => $comment->cid,
+          '@nid'  => $comment->nid,
+          '!site' => $base_url,
+        )),
+        'attributes' => array('isPermaLink' => 'false')),
     ));
 //  $comment = db_fetch_object($result)) {
 //  $items[] = $comment->subject .' - '. format_date($comment->timestamp, 'medium') .'<br />['. l(t('node'), 'node/'. $comment->nid, array('title' => $comment->title)) .']|['. l(t('edit'), 'comment/edit/'. $comment->cid) .']|['. l(t('delete'), 'admin/comment/delete/'. $comment->cid) .']';
