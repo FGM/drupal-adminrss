@@ -1,5 +1,4 @@
 <?php
-// $Id$
 /**
  * @file
  * Constant definitions for AdminRSS
