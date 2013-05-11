@@ -1,4 +1,5 @@
 name = Admin RSS
 description = Moderation/approval queue feeds.
 package = "Administration"
-core = 6.x
+core = 7.x
+php = 5.1

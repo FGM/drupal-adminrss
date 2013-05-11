@@ -4,25 +4,27 @@
  * Install file for AdminRSS.
  *
  * @since DRUPAL-5
- * @license GPL 2.0
+ * @license General Public License version 2.0 and later
  */
 
-require_once('adminrss_data.inc');
+require_once __DIR__ . '/adminrss_data.inc';
 
 /**
- * Implementation of hook_uninstall().
+ * Implements hook_uninstall().
  */
 function adminrss_uninstall() {
+  $t = get_t();
   variable_del(ADMINRSS_VAR_KEY);
   variable_del(ADMINRSS_VAR_LINK_TYPE);
-  drupal_set_message(st('Configuration variables for AdminRSS were removed.'), 'status');
+  drupal_set_message($t('Configuration variables for AdminRSS were removed.'), 'status');
 }
 
 /**
- * Implementation of hook_install().
+ * Implements hook_install().
  */
 function adminrss_install() {
-  drupal_set_message(st('AdminRSS has been installed and now needs to be <a href="!link" title="AdminRSS Configuration">configured</a>.',
-    array('!link' => url(ADMINRSS_PATH_SETTINGS))),
-    'status');
+  $t = get_t();
+  $message = $t('AdminRSS has been installed and now needs to be <a href="!link" title="AdminRSS Configuration">configured</a>.',
+    array('!link' => check_url(url(ADMINRSS_PATH_SETTINGS))));
+  drupal_set_message(filter_xss_admin($message), 'status');
 }

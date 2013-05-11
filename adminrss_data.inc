@@ -7,14 +7,14 @@
  * @license General Public License version 2.0 and later
  */
 
-/**
- * Configuration variables
- */
-define('ADMINRSS_VAR_KEY',       'adminrss_key');
-define('ADMINRSS_VAR_LINK_TYPE', 'adminrss_link_type');
+// Configuration variables.
+const ADMINRSS_VAR_KEY       = 'adminrss_key';
+const ADMINRSS_VAR_LINK_TYPE = 'adminrss_link_type';
 
-/**
- * Menu paths
- */
-define('ADMINRSS_PATH_HOME',     'adminrss');
-define('ADMINRSS_PATH_SETTINGS', 'admin/settings/adminrss');
+// Options for ADMINRSS_VAR_LINK_TYPE.
+const ADMINRSS_LINK_QUEUE = 0;
+const ADMINRSS_LINK_EDIT  = 1;
+
+// Menu paths.
+const ADMINRSS_PATH_HOME     = 'adminrss';
+const ADMINRSS_PATH_SETTINGS = 'admin/config/adminrss';
