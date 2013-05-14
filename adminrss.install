@@ -14,8 +14,16 @@ require_once __DIR__ . '/adminrss_data.inc';
  */
 function adminrss_uninstall() {
   $t = get_t();
+  cache_clear_all(ADMINRSS_CID, 'cache');
   variable_del(ADMINRSS_VAR_KEY);
-  variable_del(ADMINRSS_VAR_LINK_TYPE);
+
+  // Invoke per-feed cleanup to remove caches, settings, etc.
+  $feeds_info = adminrss_get_feed_info();
+  foreach ($feeds_info as $name => $info) {
+    $hook = "adminrss_feed_uninstall_{$name}";
+    module_invoke_all($hook);
+  }
+
   drupal_set_message($t('Configuration variables for AdminRSS were removed.'), 'status');
 }
 
