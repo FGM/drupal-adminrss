@@ -1,0 +1,15 @@
+services:
+  adminrss.feed_access:
+    class: '\Drupal\adminrss\FeedAccess'
+    arguments: ['@config.factory']
+    tags:
+      - { name: 'access_check', applies_to: '_adminrss_feed_access' }
+
+  adminrss.feed_type:
+    class: '\Drupal\adminrss\FeedType'
+    tags:
+      - { name: 'paramconverter' }
+
+  plugin.manager.adminrss.feed:
+    class: 'Drupal\adminrss\Plugin\FeedPluginManager'
+    arguments: ['Feed', '@container.namespaces', '@cache.discovery', '@module_handler']

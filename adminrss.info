@@ -1,7 +1,0 @@
-name = Admin RSS
-description = Moderation/approval queue feeds.
-package = "Administration"
-core = 7.x
-php = 5.3
-
-configure = admin/config/adminrss
