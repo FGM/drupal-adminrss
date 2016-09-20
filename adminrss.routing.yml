@@ -7,14 +7,3 @@ adminrss.admin_rss_settings_form:
     _permission: 'administer site configuration'
   options:
     _admin_route: TRUE
-
-adminrss.feed_controller_feedAction:
-  path: '/adminrss/{feed}/{token}'
-  defaults:
-    _controller: '\Drupal\adminrss\Controller\FeedController::feedAction'
-  requirements:
-    _adminrss_feed_access: 'TRUE'
-  options:
-    parameters:
-      feed:
-        type: adminrss:feed_type

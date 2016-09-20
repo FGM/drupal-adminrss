@@ -39,44 +39,6 @@ function adminrss_help($path, RouteMatchInterface $routeMatch) {
 }
 
 /**
- * Builds and outputs a RSS feed.
- *
- * @see node_feed()
- *
- * @param array $items
- *   An array of feed items in memory format.
- * @param array $channel
- *   An array of channel metadata.
- *
- * @return void
- *   Builder emits data and does not return any content.
- */
-function adminrss_format_feed($items, $channel = array()) {
-  global $base_url;
-
-  $channel_defaults = array(
-    'version'     => '2.0',
-    'title'       => t('@site - AdminRSS Feed', array('@site' => variable_get('site_name', 'drupal'))),
-    'link'        => $base_url,
-    'description' => t('Items'),
-    'language'    => language_default('language'),
-  );
-  $channel_extras = array_diff_key($channel, $channel_defaults);
-  $channel = array_merge($channel_defaults, $channel);
-  $cooked_channel = format_rss_channel($channel['title'], $channel['link'], $channel['description'], $items, $channel['language'], $channel_extras);
-  $ret = <<<EOT
-<!DOCTYPE rss [<!ENTITY % HTMLlat1 PUBLIC "-//W3C//ENTITIES Latin 1 for XHTML//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml-lat1.ent">]>
-<rss version="{$channel["version"]}" xml:base="{$base_url}"
-  xmlns:atom="http://www.w3.org/2005/Atom"
-  xmlns:dc="http://purl.org/dc/elements/1.1/">
-  $cooked_channel
-  </rss>
-EOT;
-
-  return $ret;
-}
-
-/**
  * Return information about existing Admin RSS feeds.
  *
  * @return array

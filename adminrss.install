@@ -7,14 +7,24 @@
  * @license General Public License version 2.0 and later
  */
 
+use Drupal\adminrss\AdminRss;
 use Drupal\Core\Url;
 
 /**
  * Implements hook_install().
  */
 function adminrss_install() {
+  \Drupal::service('router.builder')->rebuild();
   $message = t('AdminRSS has been installed and now needs to be <a href=":link" title="AdminRSS Configuration">configured</a>.', [
-    ':link' => Url::fromRoute(\Drupal\adminrss\AdminRss::ROUTE_SETTINGS)->toString(),
+    ':link' => Url::fromRoute(AdminRss::ROUTE_SETTINGS)->toString(),
   ]);
+  $random = new \Drupal\Component\Utility\Random();
+  $token = $random->name(16, TRUE);
+
+  \Drupal::configFactory()
+    ->getEditable(AdminRss::CONFIG)
+    ->set(AdminRss::TOKEN, $token)
+    ->save();
+
   drupal_set_message($message, 'status');
 }

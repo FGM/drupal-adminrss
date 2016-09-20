@@ -2,22 +2,21 @@
 
 namespace Drupal\adminrss;
 
-use Drupal\adminrss\Plugin\AdminRss\Feed\FeedInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Routing\Access\AccessInterface;
 
 /**
- * Class FeedAccess provides acces checking to the feed route.
+ * Class FeedAccess provides access checking to feed routes.
  */
 class FeedAccess implements AccessInterface {
 
   /**
-   * The module configuration.
+   * The access token.
    *
-   * @var \Drupal\Core\Config\ImmutableConfig
+   * @var string
    */
-  protected $config;
+  protected $token;
 
   /**
    * FeedAccess constructor.
@@ -26,26 +25,23 @@ class FeedAccess implements AccessInterface {
    *   The config.factory service.
    */
   public function __construct(ConfigFactoryInterface $configFactory) {
-    $this->config = $configFactory->get(AdminRss::CONFIG);
+    $this->token = $configFactory->get(AdminRss::CONFIG)->get(AdminRss::TOKEN);
   }
 
   /**
-   * Check access control to the feed.
+   * Check access control to AdminRSS feeds.
    *
-   * @param \Drupal\adminrss\FeedInterface $feed
-   *   The feed instance. If the requested feed type is invalid, this method
-   *   will not even be invoked, so there is no need to check this parameter.
-   * @param string $token
+   * @param string $adminrss_token
    *   The access token.
    *
    * @return \Drupal\Core\Access\AccessResultInterface
    *   The access result for the feed.
    */
-  public function access(FeedInterface $feed, $token) {
-    $expectedToken = $this->config->get(AdminRss::TOKEN);
-    $access = ($token === $expectedToken)
+  public function access($adminrss_token) {
+    $access = ($adminrss_token === $this->token)
       ? AccessResult::allowed()
       : AccessResult::forbidden('Invalid token');
+
     return $access;
   }
 
