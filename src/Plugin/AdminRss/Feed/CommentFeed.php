@@ -11,7 +11,8 @@ namespace Drupal\adminrss\Plugin\AdminRss\Feed;
  *   description = @Translation("A feed of comments pending approval.")
  * )
  */
-class CommentFeed implements FeedInterface {
+class CommentFeed extends FeedBase implements FeedInterface {
+  const TYPE = 'comment';
 
   const ADMINRSS_VAR_LINK_TYPE = 'adminrss_link_type';
 

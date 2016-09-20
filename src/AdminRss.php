@@ -8,12 +8,13 @@ namespace Drupal\adminrss;
 class AdminRss {
 
   /**
-   * Cache id for feed information.
+   * The name of the configuration object for the module.
    */
-  const CID = 'adminrss:feed-info';
-
   const CONFIG = 'adminrss.settings';
 
+  /**
+   * The name of the single setting within the configuration object.
+   */
   const TOKEN = 'token';
 
   /**

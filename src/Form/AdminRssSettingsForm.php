@@ -35,8 +35,7 @@ class AdminRssSettingsForm extends ConfigFormBase {
     $config = $this->config(AdminRss::CONFIG);
     $token = $config->get(AdminRss::TOKEN);
 
-    // Settings form is a good place to reset the implementations cache.
-    $plugins = adminrss_get_feed_info(TRUE);
+    $plugins = adminrss_feeds(TRUE);
 
     $form[AdminRss::TOKEN] = array(
       '#type' => 'textfield',
@@ -54,6 +53,7 @@ class AdminRssSettingsForm extends ConfigFormBase {
         '#type' => 'details',
         '#title' => $this->t('Admin RSS Feeds locations'),
         '#description' => $this->t('Copy and paste these links to your RSS aggregator.'),
+        '#open' => TRUE,
       );
       $items = array();
       foreach ($plugins as $name => $plugin) {

@@ -1,11 +1,12 @@
 <?php
 
-namespace Drupal\adminrss;
+namespace Drupal\adminrss\Plugin\AdminRss\Feed;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class FeedBase is the base class for AdminRSS feeds.
  */
-class FeedBase implements FeedInterface {
+abstract class FeedBase implements FeedInterface {
   const TYPE = 'base';
 
   /**

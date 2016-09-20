@@ -16,6 +16,7 @@
  * @since DRUPAL-4-6
  * @license General Public License version 2.0 and later
  */
+
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
@@ -26,7 +27,7 @@ function adminrss_help($path, RouteMatchInterface $routeMatch) {
     case 'help.page.adminrss':
       $types = implode(', ', array_map(function ($info) {
         return $info['title'];
-      }, adminrss_get_feed_info()));
+      }, adminrss_feeds()));
       $ret = t('Provide RSS feeds for administrative items: %types.', array('%types' => $types));
       break;
 
@@ -35,41 +36,6 @@ function adminrss_help($path, RouteMatchInterface $routeMatch) {
   }
 
   return $ret;
-}
-
-/**
- * Implements hook_menu().
- */
-function adminrss_menu() {
-  $type_offset = count(explode('/', ADMINRSS_PATH_HOME));
-
-  $items[ADMINRSS_PATH_HOME . "/%adminrss_type/%"] = array(
-    'title'           => 'Admin RSS Feed',
-    'page callback'   => 'adminrss_page_feed',
-    'page arguments'  => array($type_offset),
-    'access callback' => TRUE,
-    'type'            => MENU_CALLBACK,
-    'load arguments' => array($type_offset + 1),
-  );
-
-  return $items;
-}
-
-/**
- * Page callback for admin RSS feeds.
- *
- * Access control and type validity is performed by the menu loader, so there is
- * no access or existence check to perform.
- *
- * @param string $feed_builder
- *   The name of the actual feed building function.
- *
- * @return mixed
- *   Feed builders are supposed to return on their own and exit, but they could
- *   return.
- */
-function adminrss_page_feed($feed_builder) {
-  return $feed_builder();
 }
 
 /**
@@ -107,21 +73,17 @@ function adminrss_format_feed($items, $channel = array()) {
   </rss>
 EOT;
 
-  drupal_add_http_header('Content-Type', 'application/rss+xml; charset=utf-8');
-  print $ret;
+  return $ret;
 }
 
 /**
  * Return information about existing Admin RSS feeds.
  *
- * @param bool $reset
- *   Reset the implementation cache ?
- *
  * @return array
  *   A machine-name-indexed hash of feed plugins.
  *     - only ony key: "configure", boolean: expose a configuration form.
  */
-function adminrss_get_feed_info($reset = FALSE) {
+function adminrss_feeds() {
   $manager = \Drupal::service('plugin.manager.adminrss.feed');
   return $manager->getDefinitions();
 }
@@ -139,23 +101,5 @@ function adminrss_get_feed_path($name) {
   $token = \Drupal::config(\Drupal\adminrss\AdminRss::CONFIG)
     ->get(\Drupal\adminrss\AdminRss::TOKEN);
   $ret = ADMINRSS_PATH_HOME . "/$name/$token";
-  return $ret;
-}
-
-/**
- * Implements hook_adminrss_feed_info().
- */
-function adminrss_adminrss_feed_info() {
-  $ret = array(
-    'comment' => array(
-      'configure' => TRUE,
-      'label' => t('Comments approval queue'),
-    ),
-    'node' => array(
-      // 'configure' defaults to FALSE.
-      'label' => t('Nodes feed'),
-    ),
-  );
-
   return $ret;
 }

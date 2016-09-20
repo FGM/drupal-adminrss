@@ -29,7 +29,7 @@ class FeedType implements ParamConverterInterface {
    *   The converted parameter value.
    */
   public function convert($value, $definition, $name, array $defaults) {
-    $class = __NAMESPACE__ . '\\' . Unicode::ucfirst($value) . 'Feed';
+    $class = __NAMESPACE__ . '\Plugin\AdminRss\Feed\\' . Unicode::ucfirst($value) . 'Feed';
     if (!class_exists($class)) {
       return NULL;
     }

@@ -14,4 +14,12 @@ interface FeedInterface {
    */
   public function feed();
 
+  /**
+   * The feed type.
+   *
+   * @return string
+   *   Like "node" or "comment".
+   */
+  public function type();
+
 }

@@ -2,6 +2,7 @@
 
 namespace Drupal\adminrss;
 
+use Drupal\adminrss\Plugin\AdminRss\Feed\FeedInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Routing\Access\AccessInterface;

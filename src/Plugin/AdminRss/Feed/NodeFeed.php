@@ -11,7 +11,8 @@ namespace Drupal\adminrss\Plugin\AdminRss\Feed;
  *   description = @Translation("A feed of unpublished nodes.")
  * )
  */
-class NodeFeed implements FeedInterface {
+class NodeFeed extends FeedBase implements FeedInterface {
+  const TYPE = 'node';
 
   /**
    * {@inheritdoc}
