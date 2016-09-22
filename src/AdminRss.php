@@ -1,10 +1,6 @@
 <?php
 
 namespace Drupal\adminrss;
-use Drupal\Component\Render\HtmlEscapedText;
-use Drupal\Component\Utility\SafeMarkup;
-use Drupal\Core\Language\LanguageInterface;
-use Drupal\Core\Language\LanguageManagerInterface;
 
 /**
  * Class AdminRss contains constants used at various places in the module.

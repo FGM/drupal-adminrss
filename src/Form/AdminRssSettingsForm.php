@@ -81,10 +81,10 @@ class AdminRssSettingsForm extends ConfigFormBase {
    * views do, so expose them all.
    *
    * @param array $carry
-   *   A carry (accumulator) for links
+   *   A carry (accumulator) for links.
    * @param \Drupal\views\Entity\View $view
-   *   The view from which to fetch links
-   * @param $token
+   *   The view from which to fetch links.
+   * @param string $token
    *   The current access token.
    *
    * @return array
@@ -100,7 +100,7 @@ class AdminRssSettingsForm extends ConfigFormBase {
       'attributes' => [],
     ];
 
-    foreach ($displays as $displayId => $display) {
+    foreach ($displays as $display) {
       if ($display['display_plugin'] !== static::FEED_PLUGIN) {
         continue;
       }

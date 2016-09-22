@@ -1,6 +1,9 @@
 <?php
+
 /**
  * @file
+ * The AdminRSS module file.
+ *
  * Creator: James Blake <james at webgeer dot com>
  *
  * Drupal 5, 6, 7 and 8 versions: Frederic G. MARAND <fgm at osinet dot fr>
@@ -25,43 +28,12 @@ use Drupal\Core\Routing\RouteMatchInterface;
 function adminrss_help($path, RouteMatchInterface $routeMatch) {
   switch ($path) {
     case 'help.page.adminrss':
-      $types = implode(', ', array_map(function ($info) {
-        return $info['title'];
-      }, adminrss_feeds()));
-      $ret = t('Provide RSS feeds for administrative items: %types.', array('%types' => $types));
+      $ret = t('Provide RSS feeds for unpublished/unapproved content.');
       break;
 
     default:
       $ret = NULL;
   }
 
-  return $ret;
-}
-
-/**
- * Return information about existing Admin RSS feeds.
- *
- * @return array
- *   A machine-name-indexed hash of feed plugins.
- *     - only ony key: "configure", boolean: expose a configuration form.
- */
-function adminrss_feeds() {
-  $manager = \Drupal::service('plugin.manager.adminrss.feed');
-  return $manager->getDefinitions();
-}
-
-/**
- * Return the path for a given feed.
- *
- * @param string $name
- *   Machine name of the feed.
- *
- * @return string
- *   Internal path to the feed, secret key included in plain sight.
- */
-function adminrss_get_feed_path($name) {
-  $token = \Drupal::config(\Drupal\adminrss\AdminRss::CONFIG)
-    ->get(\Drupal\adminrss\AdminRss::TOKEN);
-  $ret = ADMINRSS_PATH_HOME . "/$name/$token";
   return $ret;
 }

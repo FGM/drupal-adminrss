@@ -3,3 +3,4 @@ description: 'Moderation/approval queue feeds.'
 package: 'Administration'
 core: 8.x
 type: 'module'
+configure: adminrss.admin_rss_settings_form

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Install file for AdminRSS.
@@ -8,6 +9,7 @@
  */
 
 use Drupal\adminrss\AdminRss;
+use Drupal\Component\Utility\Random;
 use Drupal\Core\Url;
 
 /**
@@ -18,7 +20,7 @@ function adminrss_install() {
   $message = t('AdminRSS has been installed and now needs to be <a href=":link" title="AdminRSS Configuration">configured</a>.', [
     ':link' => Url::fromRoute(AdminRss::ROUTE_SETTINGS)->toString(),
   ]);
-  $random = new \Drupal\Component\Utility\Random();
+  $random = new Random();
   $token = $random->name(16, TRUE);
 
   \Drupal::configFactory()
