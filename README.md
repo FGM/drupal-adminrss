@@ -22,12 +22,48 @@ changed often.
 - configure your RSS reader to read the appropriate page
 
 
+# Extending the module: additional Views
+
+## Requirements
+
+The module will automatically extend support for Views added to the site, as
+long as they meet a few requirements:
+
+- the view is tagged `AdminRSS`
+- it contains at least one feed display, with the following requirements
+  - its access handler is the AdminRSS handler
+  - its path contains the `%adminrss_token` parameter
+
+## Additional features
+
+- the Display name (labeled Administrative name in the UI popup) is used to link
+  to the feed
+- its Administrative description (in the UI popup) is used as the title for the
+  link to the feed
+
+## Suggestions
+
+In most cases, the goal of this module is to list normally unaccessible content,
+without real-time emergency, so when adding new Views, set the following query
+settings in the Advanced/Other pane in the Views UI
+
+- Disable SQL rewriting: to access inaccessible content
+- Use secondary server: to avoid filtering out yet unpublished content.
+
+When in doubt, check how the supplied Views are built.
+
+
+# License
+
+This module is licensed under the General Public License version 2.0 or later.
+
+
 # Credit
 
 - Originally created by:
     - James Blake (webgeer)
     - https://www.drupal.org/u/webgeer
-    
+
 - Drupal 5, 6, 7 and 8 versions by:
     - Frederic G. Marand (fgm / osinet)
     - http://blog.riff.org/

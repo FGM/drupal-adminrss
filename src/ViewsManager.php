@@ -89,8 +89,11 @@ class ViewsManager {
       $routes = reset($routeCollection);
       $routeName = key($routes);
 
-      $title = $display['display_title'];
-      $options['attributes']['title'] = $display['display_options']['display_description'];
+      // ID is always present so no need to check.
+      $title = $display['display_title'] ?? $display['id'];
+      if (isset($display['display_options']['display_description'])) {
+        $options['attributes']['title'] = $display['display_options']['display_description'];
+      }
 
       $link = Link::createFromRoute($title, $routeName, $tokenParam, $options);
     }
