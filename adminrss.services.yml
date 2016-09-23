@@ -4,3 +4,7 @@ services:
     arguments: ['@config.factory']
     tags:
       - { name: 'access_check', applies_to: '_adminrss_feed_access' }
+
+  adminrss.views_manager:
+    class: '\Drupal\adminrss\ViewsManager'
+    arguments: ['@config.factory', '@entity.query', '@router.route_provider']

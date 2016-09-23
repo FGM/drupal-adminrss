@@ -28,7 +28,20 @@ use Drupal\Core\Routing\RouteMatchInterface;
 function adminrss_help($path, RouteMatchInterface $routeMatch) {
   switch ($path) {
     case 'help.page.adminrss':
-      $ret = t('Provide RSS feeds for unpublished/unapproved content.');
+      /** @var \Drupal\adminrss\ViewsManager $viewsManager */
+      $viewsManager = \Drupal::service('adminrss.views_manager');
+
+      $ret = [
+        'help' => [
+          '#plain_text' => t('AdminRSS provides RSS feeds for unpublished/unapproved content.'),
+          '#prefix' => '<p>',
+          '#suffix' => "</p>\n",
+        ],
+        'feeds' => [
+          '#theme' => 'item_list',
+          '#items' => $viewsManager->getFeedLinks(),
+        ],
+      ];
       break;
 
     default:
