@@ -11,9 +11,8 @@
   "license": "GPL-2.0+",
   "homepage": "http://drupal.org/project/adminrss",
   "minimum-stability": "dev",
-  "name": "fgm/adminrss",
+  "name": "drupal/adminrss",
   "require": {
-    "drupal/drupal": "^8.2"
   },
   "support": {
     "issues": "https://www.drupal.org/project/issues/adminrss",
