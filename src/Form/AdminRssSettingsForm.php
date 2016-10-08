@@ -92,6 +92,12 @@ class AdminRssSettingsForm extends ConfigFormBase {
     }
 
     $form = parent::buildForm($form, $form_state);
+    $form['actions']['save-new'] = [
+      '#button_type' => 'default',
+      '#op' => 'new',
+      '#type' => 'submit',
+      '#value' => $this->t('Save with new generated token'),
+    ];
     return $form;
   }
 
@@ -99,12 +105,12 @@ class AdminRssSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    parent::submitForm($form, $form_state);
 
-    $this->configFactory()
-      ->getEditable(AdminRss::CONFIG)
-      ->set(AdminRss::TOKEN, $form_state->getValue(AdminRss::TOKEN))
-      ->save();
+    $token = empty($form_state->getTriggeringElement()['#op'])
+      ? $form_state->getValue(AdminRss::TOKEN)
+      : NULL;
+    AdminRss::saveNewToken($token);
+    parent::submitForm($form, $form_state);
   }
 
 }
