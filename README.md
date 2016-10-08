@@ -1,6 +1,8 @@
 
 # Description
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/gp/adminrss/badges/quality-score.png?b=8.x-1.x&s=72afcc6fcfcb43994254af21b1f574552a8bca81)](https://scrutinizer-ci.com/gp/adminrss/?branch=8.x-1.x)
+
 The AdminRSS module creates RSS feeds for the administrative information
 of a drupal website. These are protected with a key string that can be set at
 the `admin/config/services/adminrss` page.
