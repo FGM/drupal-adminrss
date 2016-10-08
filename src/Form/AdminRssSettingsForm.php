@@ -91,14 +91,14 @@ class AdminRssSettingsForm extends ConfigFormBase {
       );
     }
 
-    $formWithActions = parent::buildForm($form, $form_state);
-    $formWithActions['actions']['save-new'] = [
+    $form_with_actions = parent::buildForm($form, $form_state);
+    $form_with_actions['actions']['save-new'] = [
       '#button_type' => 'default',
       '#op' => 'new',
       '#type' => 'submit',
       '#value' => $this->t('Save with new generated token'),
     ];
-    return $formWithActions;
+    return $form_with_actions;
   }
 
   /**

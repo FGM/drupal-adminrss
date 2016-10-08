@@ -41,18 +41,18 @@ class AdminRss {
   public static function saveNewToken($token = NULL) {
     if (empty($token)) {
       $random = new Random();
-      $usedToken = $random->name(16, TRUE);
+      $used_token = $random->name(16, TRUE);
     }
     else {
-      $usedToken = $token;
+      $used_token = $token;
     }
 
     \Drupal::configFactory()
       ->getEditable(static::CONFIG)
-      ->set(static::TOKEN, $usedToken)
+      ->set(static::TOKEN, $used_token)
       ->save();
 
-    return $usedToken;
+    return $used_token;
   }
 
 }
