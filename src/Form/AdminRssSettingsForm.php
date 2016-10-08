@@ -23,23 +23,23 @@ class AdminRssSettingsForm extends ConfigFormBase {
   /**
    * AdminRssSettingsForm constructor.
    *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config.factory service.
-   * @param \Drupal\adminrss\ViewsManager $viewsManager
+   * @param \Drupal\adminrss\ViewsManager $views_manager
    *   The adminrss.views_manager service.
    */
-  public function __construct(ConfigFactoryInterface $configFactory, ViewsManager $viewsManager) {
-    parent::__construct($configFactory);
-    $this->viewsManager = $viewsManager;
+  public function __construct(ConfigFactoryInterface $config_factory, ViewsManager $views_manager) {
+    parent::__construct($config_factory);
+    $this->viewsManager = $views_manager;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $configFactory = $container->get('config.factory');
-    $viewsManager = $container->get('adminrss.views_manager');
-    return new static($configFactory, $viewsManager);
+    $config_factory = $container->get('config.factory');
+    $views_manager = $container->get('adminrss.views_manager');
+    return new static($config_factory, $views_manager);
   }
 
   /**
@@ -64,7 +64,6 @@ class AdminRssSettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config(AdminRss::CONFIG);
     $token = $config->get(AdminRss::TOKEN);
-    $feedLinks = $this->viewsManager->getFeedLinks($token);
 
     $form[AdminRss::TOKEN] = array(
       '#default_value' => $token,
@@ -77,7 +76,8 @@ class AdminRssSettingsForm extends ConfigFormBase {
       '#weight' => -5,
     );
 
-    if (!empty($feedLinks)) {
+    $feed_links = $this->viewsManager->getFeedLinks();
+    if (!empty($feed_links)) {
       $form['feeds'] = array(
         '#type' => 'details',
         '#title' => $this->t('Admin RSS Feeds locations'),
@@ -87,18 +87,18 @@ class AdminRssSettingsForm extends ConfigFormBase {
 
       $form['feeds']['links'] = array(
         '#theme' => 'item_list',
-        '#items' => $feedLinks,
+        '#items' => $feed_links,
       );
     }
 
-    $form = parent::buildForm($form, $form_state);
-    $form['actions']['save-new'] = [
+    $formWithActions = parent::buildForm($form, $form_state);
+    $formWithActions['actions']['save-new'] = [
       '#button_type' => 'default',
       '#op' => 'new',
       '#type' => 'submit',
       '#value' => $this->t('Save with new generated token'),
     ];
-    return $form;
+    return $formWithActions;
   }
 
   /**
